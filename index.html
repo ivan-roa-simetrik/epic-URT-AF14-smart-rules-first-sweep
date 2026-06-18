@@ -34,9 +34,18 @@
     .trow.selected { background-color: #F5F3FF; }
 
     /* Sidebar sweep item */
-    .sweep-item { cursor: pointer; border-radius: 8px; padding: 10px 12px; transition: background-color 120ms ease; }
+    .sweep-item { cursor: pointer; border-radius: 8px; padding: 8px 10px; transition: background-color 120ms ease; display: flex; align-items: flex-start; gap: 6px; }
     .sweep-item:hover { background: #F3F4F6; }
     .sweep-item.active { background: #EDE9FE; }
+
+    /* Drag handle */
+    .drag-handle { width: 12px; height: 12px; flex-shrink: 0; color: #D1D5DB; cursor: grab; margin-top: 2px; opacity: 0; transition: opacity 120ms ease; }
+    .sweep-item:hover .drag-handle { opacity: 1; }
+    .sweep-item.active .drag-handle { opacity: 0.5; }
+
+    /* Drag states */
+    .sweep-item.dragging { opacity: 0.35; background: #F5F3FF; }
+    .sweep-item.drag-over { background: #EDE9FE; box-shadow: 0 -2px 0 0 #7C3AED; }
 
     /* Modal row unchecked state */
     .modal-row.unchecked { opacity: 0.4; }
@@ -456,38 +465,55 @@
       <!-- ── ADV: Sweeps view ── -->
       <div id="adv-sweeps" class="hidden flex-1 overflow-hidden flex">
 
-        <!-- Left: Sweep list sidebar -->
-        <div class="w-60 flex-shrink-0 border-r border-gray-100 flex flex-col overflow-hidden bg-gray-50/50">
+        <!-- ── LEFT: Sweep list sidebar (draggable) ── -->
+        <div class="w-56 flex-shrink-0 border-r border-gray-100 flex flex-col overflow-hidden bg-gray-50/40">
 
-          <!-- Sidebar header -->
-          <div class="px-3 py-3 flex-shrink-0">
-            <!-- Header row -->
-            <div class="flex items-center justify-between mb-2.5">
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-semibold text-gray-700">Barridas de conciliación</span>
-              </div>
-              <button class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500">
+          <div class="px-3 pt-3 pb-2 flex-shrink-0">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Barridas</span>
+              <button class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500" title="Agregar barrida">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               </button>
             </div>
+          </div>
 
-            <!-- Sweep items -->
-            <div class="flex flex-col gap-1">
-              <div class="sweep-item active" onclick="selectSweep(1)">
+          <!-- Draggable sweep list -->
+          <div id="sweep-list" class="flex flex-col gap-0.5 px-2 flex-1 overflow-y-auto">
+
+            <div class="sweep-item active" draggable="true" data-sweep="1"
+                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
+                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
+                 onclick="selectSweep(1)">
+              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+              <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-gray-900">Barrida 1</span>
                   <span class="text-[10px] text-gray-400">2 reglas</span>
                 </div>
-                <div class="text-[11px] text-gray-500 mt-0.5">monto, fecha_transaccion</div>
+                <div class="text-[11px] text-gray-500 mt-0.5 truncate">monto, fecha_transaccion</div>
               </div>
-              <div class="sweep-item" onclick="selectSweep(2)">
+            </div>
+
+            <div class="sweep-item" draggable="true" data-sweep="2"
+                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
+                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
+                 onclick="selectSweep(2)">
+              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+              <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-gray-700">Barrida 2</span>
                   <span class="text-[10px] text-gray-400">1 regla</span>
                 </div>
-                <div class="text-[11px] text-gray-400 mt-0.5">ref_interna</div>
+                <div class="text-[11px] text-gray-400 mt-0.5 truncate">ref_interna</div>
               </div>
-              <div class="sweep-item" onclick="selectSweep(3)">
+            </div>
+
+            <div class="sweep-item" draggable="true" data-sweep="3"
+                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
+                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
+                 onclick="selectSweep(3)">
+              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+              <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-gray-700">Barrida 3</span>
                   <span class="text-[10px] text-amber-500">Sin guardar</span>
@@ -495,106 +521,137 @@
                 <div class="text-[11px] text-gray-400 mt-0.5 italic">Sin reglas</div>
               </div>
             </div>
-          </div>
 
-          <!-- Add button -->
-          <div class="px-3 mt-auto pb-3">
-            <button class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors justify-center">
+          </div><!-- /sweep-list -->
+
+          <div class="px-2 pb-3 mt-2 flex-shrink-0">
+            <button class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-violet-300 hover:text-violet-600 transition-colors justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               Agregar barrida
             </button>
           </div>
         </div>
 
-        <!-- Right: Sweep form -->
+        <!-- ── RIGHT: Sweep config panel ── -->
         <div class="flex-1 flex flex-col overflow-hidden">
 
-          <!-- Form header -->
+          <!-- Panel header -->
           <div class="flex items-center justify-between px-6 py-3 border-b border-gray-100 flex-shrink-0">
-            <div class="flex items-center gap-3">
-              <span class="font-semibold text-gray-900">Configurar barrida</span>
-              <span class="text-xs text-gray-400">(Borrador)</span>
+            <div class="flex items-center gap-2.5">
+              <span class="font-semibold text-gray-900 text-sm">Configurar barrida</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Borrador</span>
             </div>
             <div class="flex items-center gap-2">
-              <!-- version chips when there are changes -->
               <div class="flex items-center gap-1">
-                <button class="chip active text-xs" style="padding: 3px 10px;">Versión con cambios</button>
-                <button class="chip text-xs" style="padding: 3px 10px;">Versión actual</button>
+                <button class="chip active text-xs" style="padding:3px 10px;">Versión con cambios</button>
+                <button class="chip text-xs" style="padding:3px 10px;">Versión actual</button>
               </div>
-              <div class="h-6 border-l border-gray-200"></div>
-              <span class="text-xs font-semibold text-gray-600">Tipo de cruce:</span>
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">1:1</span>
-              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <div class="h-5 border-l border-gray-200"></div>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-900 text-white text-xs font-medium hover:bg-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 Ejecutar barridas
               </button>
             </div>
           </div>
 
-          <!-- Form content (scrollable) -->
-          <div class="flex-1 overflow-y-auto p-6">
+          <!-- Scrollable content -->
+          <div class="flex-1 overflow-y-auto">
 
-            <!-- Reconciliation sides selectors -->
-            <div class="grid grid-cols-2 gap-4 mb-5">
-              <div>
-                <label class="text-xs font-semibold text-gray-500 mb-1.5 block">Lado A — Recurso base</label>
-                <div class="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white cursor-pointer hover:border-gray-300 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-                  <span class="text-xs font-medium text-gray-800 flex-1">Banco BBVA · Transacciones</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            <!-- ── FUENTE A — CRUCE — FUENTE B ── -->
+            <div class="flex items-stretch border-b border-gray-100 bg-gray-50/30 flex-shrink-0">
+
+              <!-- Fuente A -->
+              <div class="flex-1 flex items-center gap-3 px-5 py-4">
+                <div class="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
                 </div>
-              </div>
-              <div>
-                <label class="text-xs font-semibold text-gray-500 mb-1.5 block">Lado B — Recurso base</label>
-                <div class="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white cursor-pointer hover:border-gray-300 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-                  <span class="text-xs font-medium text-gray-800 flex-1">ERP SAP · Contabilidad</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <div class="flex-1 min-w-0">
+                  <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Fuente A</div>
+                  <div class="text-sm font-semibold text-gray-900 truncate">Banco BBVA</div>
+                  <div class="text-xs text-gray-500 truncate">Transacciones</div>
                 </div>
+                <button class="flex items-center gap-1 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 hover:bg-white hover:border-gray-300 transition-colors bg-white/60 flex-shrink-0">
+                  Columnas
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
               </div>
-            </div>
 
-            <!-- ── SUGGESTION ALERT (Advanced) ── -->
-            <div id="adv-alert-wrap" class="mb-5 min-h-[36px]"></div>
-
-            <!-- Rules section header -->
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-gray-700">Reglas de la barrida</span>
-              <button class="flex items-center gap-1 text-xs font-medium text-violet-700 hover:text-violet-900 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                Agregar regla
-              </button>
-            </div>
-
-            <!-- Rules column headers -->
-            <div class="grid gap-2 px-1 mb-1 text-[11px] font-medium text-gray-400 uppercase tracking-wide" style="grid-template-columns:1fr 32px 1fr 72px 72px 28px;">
-              <div class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-                Banco BBVA (Lado A)
+              <!-- Cruce connector -->
+              <div class="flex flex-col items-center justify-center px-4 gap-1.5 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-px bg-gray-300"></div>
+                  <button class="flex items-center gap-1 border border-violet-200 bg-violet-50 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 transition-colors">
+                    1:1
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="w-8 h-px bg-gray-300"></div>
+                </div>
+                <span class="text-[10px] text-gray-400 font-medium">Cruce</span>
               </div>
-              <div></div>
-              <div class="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-                ERP SAP (Lado B)
+
+              <!-- Fuente B -->
+              <div class="flex-1 flex items-center gap-3 px-5 py-4">
+                <div class="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Fuente B</div>
+                  <div class="text-sm font-semibold text-gray-900 truncate">ERP SAP</div>
+                  <div class="text-xs text-gray-500 truncate">Contabilidad</div>
+                </div>
+                <button class="flex items-center gap-1 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 hover:bg-white hover:border-gray-300 transition-colors bg-white/60 flex-shrink-0">
+                  Columnas
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
               </div>
-              <div>Tolerancia</div>
-              <div>Unidad</div>
-              <div></div>
-            </div>
+            </div><!-- /sources strip -->
 
-            <!-- Rules rows container -->
-            <div id="adv-rules" class="flex flex-col gap-2 mb-4">
-              <!-- Rendered by JS on sweep select -->
-            </div>
+            <!-- Scrollable rules area -->
+            <div class="p-6">
 
-            <!-- Save button -->
-            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-              <button class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Descartar cambios</button>
-              <button class="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors">Guardar barrida</button>
-            </div>
+              <!-- AI Alert -->
+              <div id="adv-alert-wrap" class="mb-5 min-h-[36px]"></div>
 
-          </div><!-- /form content -->
-        </div><!-- /right form -->
+              <!-- Resultados section -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Resultados</span>
+                  <span class="text-[10px] text-gray-400 font-normal normal-case">Reglas de cruce para esta barrida</span>
+                </div>
+                <button class="flex items-center gap-1 text-xs font-medium text-violet-700 hover:text-violet-900 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  Agregar regla
+                </button>
+              </div>
+
+              <!-- Rules column headers -->
+              <div class="grid gap-2 px-2 mb-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wide" style="grid-template-columns:1fr 32px 1fr 80px 80px 28px;">
+                <div class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                  Banco BBVA — A
+                </div>
+                <div></div>
+                <div class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                  ERP SAP — B
+                </div>
+                <div>Tolerancia</div>
+                <div>Unidad</div>
+                <div></div>
+              </div>
+
+              <!-- Rule rows -->
+              <div id="adv-rules" class="flex flex-col gap-1.5 mb-6"></div>
+
+              <!-- Footer actions -->
+              <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                <button class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">Descartar cambios</button>
+                <button class="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors">Guardar barrida</button>
+              </div>
+
+            </div><!-- /rules area -->
+          </div><!-- /scrollable -->
+        </div><!-- /right panel -->
       </div><!-- /adv-sweeps -->
 
     </div><!-- /screen-adv -->
@@ -1148,6 +1205,54 @@
   };
 
   // ── Navigation ────────────────────────────────────────────────
+  // ── Drag & drop sweep reorder ──────────────────────────────────
+  let dragSrc = null;
+
+  function onDragStart(e) {
+    dragSrc = e.currentTarget;
+    dragSrc.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragSrc.dataset.sweep);
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.currentTarget;
+    if (target !== dragSrc) target.classList.add('drag-over');
+  }
+
+  function onDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+  }
+
+  function onDrop(e) {
+    e.preventDefault();
+    const target = e.currentTarget;
+    target.classList.remove('drag-over');
+    if (!dragSrc || dragSrc === target) return;
+    const list = document.getElementById('sweep-list');
+    const items = [...list.children];
+    const srcIdx = items.indexOf(dragSrc);
+    const tgtIdx = items.indexOf(target);
+    // Insert before or after depending on position
+    if (srcIdx < tgtIdx) list.insertBefore(dragSrc, target.nextSibling);
+    else list.insertBefore(dragSrc, target);
+    // Renumber labels
+    [...list.children].forEach((el, i) => {
+      const num = i + 1;
+      el.dataset.sweep = num;
+      const label = el.querySelector('.text-xs.font-semibold');
+      if (label && label.textContent.startsWith('Barrida')) label.textContent = `Barrida ${num}`;
+    });
+  }
+
+  function onDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+    document.querySelectorAll('.sweep-item').forEach(el => el.classList.remove('drag-over'));
+    dragSrc = null;
+  }
+
   function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('expanded');
   }
