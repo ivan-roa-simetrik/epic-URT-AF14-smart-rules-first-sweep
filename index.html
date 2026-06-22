@@ -614,21 +614,38 @@
 
     <div id="screen-adv" class="screen flex-col overflow-hidden">
 
-      <!-- Breadcrumb + view toggle bar -->
-      <div class="border-b border-border px-6 py-2.5 flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center gap-1.5 text-xs text-gray-500">
-          <button onclick="resetFlow()" class="hover:text-gray-900 transition-colors">Recursos</button>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          <button onclick="goTo('adv-diagram')" class="hover:text-gray-900 transition-colors">Cierre Contable Q1</button>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          <span class="text-gray-900 font-medium">Configurar barridas</span>
-          <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-500">Borrador</span>
+      <!-- Breadcrumb bar -->
+      <div class="px-6 py-2 flex items-center gap-1.5 text-xs text-gray-500 flex-shrink-0">
+        <button onclick="resetFlow()" class="hover:text-gray-900 transition-colors">Recursos</button>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <button onclick="goTo('adv-diagram')" class="hover:text-gray-900 transition-colors">Cierre Contable Q1</button>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span class="text-gray-700 font-medium">Configurar barridas</span>
+      </div>
+
+      <!-- Page header -->
+      <div class="border-b border-border px-6 pt-3 pb-0 flex-shrink-0">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-warning">Borrador</span>
+            <span class="font-semibold text-gray-900 text-sm">Configurar barrida</span>
+            <button class="w-5 h-5 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" title="Ayuda">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            </button>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 text-xs text-gray-500">
+              <span class="font-medium text-gray-600">Tipo de cruce</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-600">1:1</span>
+            </div>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Ejecutar barrida
+            </button>
+          </div>
         </div>
-        <!-- Diagrama / Barridas chips -->
-        <div class="flex items-center gap-1">
-          <button onclick="advView('diagram')" id="chip-diagram" class="chip active">Diagrama</button>
-          <button onclick="advView('sweeps')" id="chip-sweeps" class="chip">Barridas</button>
-        </div>
+        <!-- AI Alert banner -->
+        <div id="adv-alert-wrap" class="pb-3"></div>
       </div>
 
       <!-- ── ADV: Diagram view ── -->
@@ -683,7 +700,7 @@
           <div class="px-3 pt-3 pb-2 flex-shrink-0">
             <div class="flex items-center justify-between mb-2">
               <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Barridas</span>
-              <button class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500" title="Agregar barrida">
+              <button onclick="addSweep()" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500" title="Agregar barrida">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               </button>
             </div>
@@ -691,53 +708,10 @@
 
           <!-- Draggable sweep list -->
           <div id="sweep-list" class="flex flex-col gap-0.5 px-2 flex-1 overflow-y-auto">
-
-            <div class="sweep-item active" draggable="true" data-sweep="1"
-                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
-                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
-                 onclick="selectSweep(1)">
-              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-gray-900">Barrida 1</span>
-                  <span class="text-[10px] text-gray-400">2 reglas</span>
-                </div>
-                <div class="text-[11px] text-gray-500 mt-0.5 truncate">monto, fecha_transaccion</div>
-              </div>
-            </div>
-
-            <div class="sweep-item" draggable="true" data-sweep="2"
-                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
-                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
-                 onclick="selectSweep(2)">
-              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-gray-700">Barrida 2</span>
-                  <span class="text-[10px] text-gray-400">1 regla</span>
-                </div>
-                <div class="text-[11px] text-gray-400 mt-0.5 truncate">ref_interna</div>
-              </div>
-            </div>
-
-            <div class="sweep-item" draggable="true" data-sweep="3"
-                 ondragstart="onDragStart(event)" ondragover="onDragOver(event)"
-                 ondrop="onDrop(event)" ondragend="onDragEnd(event)" ondragleave="onDragLeave(event)"
-                 onclick="selectSweep(3)">
-              <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-gray-700">Barrida 3</span>
-                  <span class="text-[10px] text-warning/80">Sin guardar</span>
-                </div>
-                <div class="text-[11px] text-gray-400 mt-0.5 italic">Sin reglas</div>
-              </div>
-            </div>
-
           </div><!-- /sweep-list -->
 
           <div class="px-2 pb-3 mt-2 flex-shrink-0">
-            <button class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-ai-gray-secondary hover:text-ai-purple transition-colors justify-center">
+            <button onclick="addSweep()" class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-ai-gray-secondary hover:text-ai-purple transition-colors justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               Agregar barrida
             </button>
@@ -747,34 +721,28 @@
         <!-- ── RIGHT: Sweep config panel ── -->
         <div class="flex-1 flex flex-col overflow-hidden">
 
-          <!-- Panel header -->
-          <div class="flex items-center justify-between px-6 py-3 border-b border-border flex-shrink-0">
-            <div class="flex items-center gap-2.5">
-              <span class="font-semibold text-gray-900 text-sm">Configurar barrida</span>
-              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-warning">Borrador</span>
+          <!-- Empty state: no sweep selected -->
+          <div id="adv-empty-state" class="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1">
-                <button class="chip active text-xs" style="padding:3px 10px;">Versión con cambios</button>
-                <button class="chip text-xs" style="padding:3px 10px;">Versión actual</button>
-              </div>
-              <div class="h-5 border-l border-border"></div>
-              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                Ejecutar barridas
-              </button>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 mb-1">Agregá tu primera barrida</p>
+              <p class="text-xs text-gray-400 max-w-[220px]">Cada barrida define un conjunto de reglas de cruce entre las dos fuentes.</p>
             </div>
+            <button onclick="addSweep()" class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Agregar barrida
+            </button>
           </div>
 
-          <!-- Scrollable content -->
-          <div class="flex-1 overflow-y-auto">
+          <!-- Scrollable content (hidden until sweep selected) -->
+          <div id="adv-config-content" class="hidden flex-1 overflow-y-auto">
 
             <!-- Scrollable rules area -->
             <div class="p-6">
               <h2 class="text-sm font-semibold text-gray-900 mb-5">Configuración de cruce</h2>
 
-              <!-- AI Alert -->
-              <div id="adv-alert-wrap" class="mb-5 min-h-[36px]"></div>
 
               <!-- Resultados section -->
               <div class="flex items-center justify-between mb-3">
@@ -1150,7 +1118,6 @@
       <div class="flex-1">Fuente A — Banco BBVA</div>
       <div class="w-10 text-center">Op.</div>
       <div class="flex-1">Fuente B — ERP SAP</div>
-      <div class="w-24 text-right">Confianza</div>
     </div>
 
     <!-- Rows -->
@@ -1171,11 +1138,6 @@
           <span class="font-medium text-gray-900 text-sm">amount</span>
           <span class="text-[11px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">NUMBER</span>
         </div>
-        <div class="w-24 flex justify-end">
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-ai-gray-primary text-ai-purple">
-            <div class="w-1.5 h-1.5 rounded-full bg-ai-gray-primary0"></div>Alta · 0.94
-          </span>
-        </div>
       </label>
 
       <!-- Row 1: HIGH -->
@@ -1192,11 +1154,6 @@
           <div class="w-2 h-2 rounded-full bg-ai-gray-primary0 flex-shrink-0"></div>
           <span class="font-medium text-gray-900 text-sm">transaction_date</span>
           <span class="text-[11px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">DATE</span>
-        </div>
-        <div class="w-24 flex justify-end">
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-ai-gray-primary text-ai-purple">
-            <div class="w-1.5 h-1.5 rounded-full bg-ai-gray-primary0"></div>Alta · 0.91
-          </span>
         </div>
       </label>
 
@@ -1215,11 +1172,6 @@
           <span class="font-medium text-gray-900 text-sm">reference_id</span>
           <span class="text-[11px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">STRING</span>
         </div>
-        <div class="w-24 flex justify-end">
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-warning">
-            <div class="w-1.5 h-1.5 rounded-full bg-warning"></div>Media · 0.58
-          </span>
-        </div>
       </label>
 
       <!-- Row 3: LOW -->
@@ -1236,11 +1188,6 @@
           <div class="w-2 h-2 rounded-full bg-gray-300 flex-shrink-0"></div>
           <span class="font-medium text-gray-900 text-sm">gl_account</span>
           <span class="text-[11px] text-gray-400 font-mono bg-gray-100 px-1.5 py-0.5 rounded">STRING</span>
-        </div>
-        <div class="w-24 flex justify-end">
-          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-500">
-            <div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div>Baja · 0.31
-          </span>
         </div>
       </label>
 
@@ -1364,7 +1311,8 @@
   // ── State ──────────────────────────────────────────────────────
   let currentScreen  = 'list';
   let currentAdvView = 'diagram';
-  let activeSweep    = 1;
+  let activeSweep    = null;
+  let sweepCount     = 0;
   let advState       = 'IDLE'; // IDLE = not yet started
   let stdState       = 'IDLE';
 
@@ -1376,11 +1324,8 @@
   ];
 
   const SWEEP_RULES = {
-    1: [
-      { left:'monto',             right:'amount',           p:'HIGH' },
-      { left:'fecha_transaccion', right:'transaction_date', p:'HIGH' },
-    ],
-    2: [{ left:'ref_interna', right:'reference_id', p:'MEDIUM' }],
+    1: [],
+    2: [],
     3: [],
   };
 
@@ -1501,11 +1446,8 @@
     const sweepsEl = document.getElementById('adv-sweeps');
     sweepsEl.style.display = view === 'sweeps' ? 'flex' : 'none';
 
-    document.getElementById('chip-diagram').classList.toggle('active', view === 'diagram');
-    document.getElementById('chip-sweeps').classList.toggle('active', view === 'sweeps');
-
     if (view === 'sweeps') {
-      selectSweep(activeSweep);
+      if (activeSweep) selectSweep(activeSweep);
       if (advState === 'LOADING' || advState === 'IDLE') {
         advState = 'LOADING';
         renderBanner('adv-alert-wrap', 'LOADING');
@@ -1538,7 +1480,35 @@
     document.querySelectorAll('.sweep-item').forEach((el, i) => {
       el.classList.toggle('active', i + 1 === n);
     });
+    document.getElementById('adv-empty-state').classList.add('hidden');
+    document.getElementById('adv-config-content').classList.remove('hidden');
     renderAdvRules(n);
+  }
+
+  function addSweep() {
+    sweepCount++;
+    const n = sweepCount;
+    SWEEP_RULES[n] = [];
+    const list = document.getElementById('sweep-list');
+    const item = document.createElement('div');
+    item.className = 'sweep-item';
+    item.draggable = true;
+    item.dataset.sweep = n;
+    item.setAttribute('ondragstart', 'onDragStart(event)');
+    item.setAttribute('ondragover', 'onDragOver(event)');
+    item.setAttribute('ondrop', 'onDrop(event)');
+    item.setAttribute('ondragend', 'onDragEnd(event)');
+    item.setAttribute('ondragleave', 'onDragLeave(event)');
+    item.setAttribute('onclick', `selectSweep(${n})`);
+    item.innerHTML = `<svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-900">Barrida ${n}</span>
+        </div>
+        <div class="text-[11px] text-gray-400 mt-0.5 italic">Sin reglas</div>
+      </div>`;
+    list.appendChild(item);
+    selectSweep(n);
   }
 
   // ── Rules rendering ────────────────────────────────────────────
@@ -1608,8 +1578,8 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
         <div class="flex flex-col min-w-0 flex-1">
-          <span class="text-sm font-semibold text-foreground">Sugerencia de barridas</span>
-          <span class="text-xs text-ai-purple mt-0.5">Las sugerencias se aplicaron correctamente. Para recalcularlas, selecciona <button onclick="revaluate('${ctx}')" type="button" class="underline font-medium text-foreground hover:text-foreground bg-transparent border-0 cursor-pointer p-0">volver a analizar</button>.</span>
+          <span class="text-sm font-semibold text-foreground">Sugerencias aplicadas</span>
+          <span class="text-xs text-ai-purple mt-0.5">Aplicaste las reglas sugeridas para esta barrida. Podés consultar el detalle en cualquier momento con <button onclick="openModal('${ctx}')" type="button" class="underline font-medium text-foreground hover:text-foreground bg-transparent border-0 cursor-pointer p-0">ver detalle</button>.</span>
         </div>
       </div>`;
       return;
@@ -1626,8 +1596,8 @@
     const iconColor = isError ? 'text-destructive' : 'text-ai-purple';
     const iconSvg = isError ? WARN_SVG : SPARKLES_SVG;
 
-    const TITLES = { LOADING:'Analizando columnas…', SUCCESS_HIGH:'Encontramos coincidencias de alta confianza', SUCCESS_LOW:'Sugerencias disponibles', ERROR:'El análisis no pudo completarse', ACCEPTED:'Todas las sugerencias fueron aceptadas', DISCARDED:'Sugerencias descartadas' };
-    const DESCS  = { LOADING:'~5 seg · podés configurar mientras tanto', SUCCESS_HIGH:'4 reglas sugeridas · 2 de alta confianza', SUCCESS_LOW:'2 reglas de confianza media y baja', ERROR:'Podés seguir configurando sin problema.', ACCEPTED:'Se aplicaron todas las reglas sugeridas en la barrida.', DISCARDED:'Podés evaluar de nuevo cuando quieras.' };
+    const TITLES = { LOADING:'Analizando columnas…', SUCCESS_HIGH:'Encontramos coincidencias para configurar', SUCCESS_LOW:'Sugerencias disponibles', ERROR:'El análisis no pudo completarse', ACCEPTED:'Todas las sugerencias fueron aceptadas', DISCARDED:'Sugerencias descartadas' };
+    const DESCS  = { LOADING:'~5 seg · podés configurar mientras tanto', SUCCESS_HIGH:'4 reglas sugeridas para esta barrida', SUCCESS_LOW:'2 reglas sugeridas para esta barrida', ERROR:'Podés seguir configurando sin problema.', ACCEPTED:'Se aplicaron todas las reglas sugeridas en la barrida.', DISCARDED:'Podés evaluar de nuevo cuando quieras.' };
 
     const footerId = wrapperId === 'adv-alert-wrap' ? 'adv' : 'std';
 
@@ -1725,16 +1695,49 @@
     activeCtx = ctx || activeCtx;
     const selected = getCheckedIndices();
     const selectedRules = selected.map(i => SUGGESTIONS[i]);
-    insertRules(activeCtx, selectedRules);
-    const state = 'ACCEPTED';
-    if (activeCtx === 'adv') advState = state;
-    else stdState = state;
-    renderBanner(activeCtx === 'adv' ? 'adv-alert-wrap' : 'std-alert-wrap', state);
+
+    if (activeCtx === 'adv') {
+      // Create a sweep if none exists yet
+      if (!activeSweep) addSweep();
+      // Persist rules into SWEEP_RULES and re-render the config panel
+      SWEEP_RULES[activeSweep] = selectedRules;
+      insertRules('adv', selectedRules);
+      // Update sidebar item label
+      const sweepItems = document.querySelectorAll('.sweep-item');
+      sweepItems.forEach((el, i) => {
+        if (i + 1 === activeSweep) {
+          const preview = selectedRules.map(r => r.left).join(', ');
+          const container = el.querySelector('.flex-1.min-w-0');
+          if (!container) return;
+          const titleRow = container.firstElementChild;
+          const subLine  = container.lastElementChild;
+          if (titleRow) {
+            const nameSpan = titleRow.querySelector('span');
+            if (nameSpan) nameSpan.textContent = `Barrida ${activeSweep}`;
+            const badge = titleRow.querySelectorAll('span')[1];
+            if (badge) { badge.textContent = `${selectedRules.length} regla${selectedRules.length !== 1 ? 's' : ''}`; badge.className = 'text-[10px] text-gray-400'; }
+          }
+          if (subLine && subLine !== titleRow) {
+            subLine.textContent = preview;
+            subLine.classList.remove('italic');
+            subLine.classList.add('text-gray-500');
+          }
+        }
+      });
+      advState = 'ACCEPTED';
+      renderBanner('adv-alert-wrap', 'ACCEPTED');
+    } else {
+      insertRules('std', selectedRules);
+      stdState = 'ACCEPTED';
+      renderBanner('std-alert-wrap', 'ACCEPTED');
+    }
+
     closeModal();
     const total = document.querySelectorAll('.rule-chk').length;
+    const sweepLabel = activeCtx === 'adv' ? `Barrida ${activeSweep}` : 'Barrida 1';
     const msg = selected.length === total
-      ? `${selected.length} reglas aplicadas en Barrida 1`
-      : `${selected.length} de ${total} reglas aplicadas en Barrida 1`;
+      ? `${selected.length} reglas aplicadas en ${sweepLabel}`
+      : `${selected.length} de ${total} reglas aplicadas en ${sweepLabel}`;
     showToast(msg);
   }
 
@@ -1769,7 +1772,7 @@
     if (state === 'LOADING') return;
     document.getElementById('rules-modal').classList.remove('hidden');
     document.getElementById('modal-footer').style.display =
-      ['ACCEPTED','DISCARDED'].includes(state) ? 'none' : '';
+      state === 'DISCARDED' ? 'none' : '';
     updateSelectionHint();
   }
 
