@@ -700,7 +700,7 @@
           <div class="px-3 pt-3 pb-2 flex-shrink-0">
             <div class="flex items-center justify-between mb-2">
               <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Barridas</span>
-              <button onclick="addSweep()" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500" title="Agregar barrida">
+              <button id="btn-add-sweep-header" onclick="addSweep()" class="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-gray-200 text-gray-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none" title="Agregar barrida">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               </button>
             </div>
@@ -711,7 +711,7 @@
           </div><!-- /sweep-list -->
 
           <div class="px-2 pb-3 mt-2 flex-shrink-0">
-            <button onclick="addSweep()" class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-ai-gray-secondary hover:text-ai-purple transition-colors justify-center">
+            <button id="btn-add-sweep-footer" onclick="addSweep()" class="w-full flex items-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-ai-gray-secondary hover:text-ai-purple transition-colors justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               Agregar barrida
             </button>
@@ -727,8 +727,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
             </div>
             <div>
-              <p class="text-sm font-semibold text-gray-900 mb-1">Agregá tu primera barrida</p>
-              <p class="text-xs text-gray-400 max-w-[220px]">Cada barrida define un conjunto de reglas de cruce entre las dos fuentes.</p>
+              <p class="text-sm font-semibold text-gray-900 mb-1">Agrega tu primera barrida</p>
+              <p class="text-xs text-gray-400 max-w-[220px]">Las barridas de conciliación definen las reglas de cruce entre las dos fuentes.</p>
             </div>
             <button onclick="addSweep()" class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
@@ -741,7 +741,13 @@
 
             <!-- Scrollable rules area -->
             <div class="p-6">
-              <h2 class="text-sm font-semibold text-gray-900 mb-5">Configuración de cruce</h2>
+              <div class="flex items-center justify-between mb-5">
+                <h2 class="text-sm font-semibold text-gray-900">Configuración de cruce</h2>
+                <div id="adv-sweep-type-badge" class="hidden items-center gap-1.5">
+                  <span class="text-xs text-gray-400">Tipo de barrida:</span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-ai-purple/10 text-ai-purple">Conciliación</span>
+                </div>
+              </div>
 
 
               <!-- Resultados section -->
@@ -1086,6 +1092,76 @@
 
 
 <!-- ════════════════════════════════════════
+     ADD SWEEP MODAL
+════════════════════════════════════════ -->
+<div id="add-sweep-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 flex flex-col">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-6 pb-4">
+      <h2 class="text-base font-semibold text-gray-900">Agregar barrida</h2>
+      <button onclick="closeAddSweepModal()" class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 pb-6 flex flex-col gap-5">
+
+      <!-- Tipo de barrida -->
+      <div>
+        <p class="text-sm font-medium text-gray-900 mb-3">Tipo de barrida</p>
+        <div class="flex flex-col gap-3">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="radio" name="sweep-type" value="conciliacion" checked
+                   class="mt-0.5 w-4 h-4 accent-primary flex-shrink-0 cursor-pointer" />
+            <div>
+              <p class="text-sm font-semibold text-gray-900">Barrida de conciliación</p>
+              <p class="text-xs text-gray-500 mt-0.5">Cruza distintos recursos según los criterios que definas.</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="radio" name="sweep-type" value="compensacion"
+                   class="mt-0.5 w-4 h-4 accent-primary flex-shrink-0 cursor-pointer" />
+            <div>
+              <p class="text-sm font-semibold text-gray-900">Barrida de compensación</p>
+              <p class="text-xs text-gray-500 mt-0.5">Cruza los registros de un mismo recurso para resolver discrepancias y gestionar transacciones que no cuentan con contrapartidas.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Nombre -->
+      <div>
+        <label class="block text-sm font-medium text-gray-900 mb-1.5">
+          Nombre de la barrida<span class="text-destructive ml-0.5">*</span>
+        </label>
+        <input id="sweep-name-input" type="text" placeholder="Barrida"
+               oninput="updateAddSweepBtn()"
+               class="w-full px-3 py-2 rounded-lg border border-border text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors" />
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label class="block text-sm font-medium text-gray-900 mb-1.5">Descripción de la barrida</label>
+        <textarea id="sweep-desc-input" placeholder="Ingresa una descripción" maxlength="250" rows="3"
+                  oninput="document.getElementById('sweep-desc-count').textContent = this.value.length + '/250'"
+                  class="w-full px-3 py-2 rounded-lg border border-border text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"></textarea>
+        <p class="text-right text-xs text-gray-400 mt-1"><span id="sweep-desc-count">0</span>/250</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-border">
+      <button onclick="closeAddSweepModal()" class="px-4 py-2 rounded-lg border border-border text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Cancelar</button>
+      <button id="add-sweep-confirm-btn" onclick="confirmAddSweep()" disabled
+              class="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">Agregar</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
      SUGGESTED RULES MODAL (shared fixed bottom)
 ════════════════════════════════════════ -->
 <div id="rules-modal" class="hidden fixed inset-x-0 bottom-0 z-40">
@@ -1098,8 +1174,8 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-ai-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         </div>
         <div>
-          <h2 class="font-semibold text-gray-900 text-sm">Sugerencias de reglas de cruce</h2>
-          <p class="text-xs text-gray-500">Seleccioná las que querés aplicar — podés ajustar el resto a mano</p>
+          <h2 class="font-semibold text-gray-900 text-sm">Barrida de conciliación sugerida</h2>
+          <p class="text-xs text-gray-500">Selecciona las reglas que quieres incluir en la barrida.</p>
         </div>
       </div>
       <button onclick="closeModal()" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1196,14 +1272,14 @@
     <!-- Footer -->
     <div id="modal-footer" class="flex items-center justify-between px-6 py-4 border-t border-border flex-shrink-0">
       <button onclick="dismissAction()" class="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-        Descartar todas
+        Descartar sugerencia
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
       <div class="flex items-center gap-3">
-        <span id="modal-selection-hint" class="text-xs text-gray-400">2 de 4 seleccionadas</span>
+        <span id="modal-selection-hint" class="text-xs text-gray-400">2 de 4 reglas</span>
         <button onclick="acceptAction()" id="modal-accept-btn"
                 class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-          Aplicar seleccionadas
+          Crear barrida
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </button>
       </div>
@@ -1485,7 +1561,34 @@
     renderAdvRules(n);
   }
 
+  function setAddSweepButtonsDisabled(disabled) {
+    const btnHeader = document.getElementById('btn-add-sweep-header');
+    const btnFooter = document.getElementById('btn-add-sweep-footer');
+    if (btnHeader) btnHeader.disabled = disabled;
+    if (btnFooter) btnFooter.disabled = disabled;
+  }
+
   function addSweep() {
+    if (advState === 'ACCEPTED') return;
+    // Reset and open the modal
+    document.getElementById('sweep-name-input').value = '';
+    document.getElementById('sweep-desc-input').value = '';
+    document.getElementById('sweep-desc-count').textContent = '0/250';
+    document.querySelector('input[name="sweep-type"][value="conciliacion"]').checked = true;
+    document.getElementById('add-sweep-confirm-btn').disabled = true;
+    document.getElementById('add-sweep-modal').classList.remove('hidden');
+  }
+
+  function updateAddSweepBtn() {
+    const name = document.getElementById('sweep-name-input').value.trim();
+    document.getElementById('add-sweep-confirm-btn').disabled = name.length === 0;
+  }
+
+  function closeAddSweepModal() {
+    document.getElementById('add-sweep-modal').classList.add('hidden');
+  }
+
+  function _createSweepInSidebar(name) {
     sweepCount++;
     const n = sweepCount;
     SWEEP_RULES[n] = [];
@@ -1503,12 +1606,20 @@
     item.innerHTML = `<svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-gray-900">Barrida ${n}</span>
+          <span class="text-xs font-semibold text-gray-900">${name}</span>
         </div>
         <div class="text-[11px] text-gray-400 mt-0.5 italic">Sin reglas</div>
       </div>`;
     list.appendChild(item);
     selectSweep(n);
+    return n;
+  }
+
+  function confirmAddSweep() {
+    const name = document.getElementById('sweep-name-input').value.trim();
+    if (!name) return;
+    closeAddSweepModal();
+    _createSweepInSidebar(name);
   }
 
   // ── Rules rendering ────────────────────────────────────────────
@@ -1565,7 +1676,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-info flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
         <div>
           <p class="text-sm font-semibold text-foreground">No se encontraron coincidencias automáticas</p>
-          <p class="text-xs text-info mt-0.5">El análisis completó pero las columnas disponibles no tienen un perfil de cruce obvio. Configurá las reglas manualmente.</p>
+          <p class="text-xs text-info mt-0.5">El análisis completó pero las columnas disponibles no tienen un perfil de cruce obvio. Configura las reglas manualmente.</p>
         </div>
       </div>`;
       return;
@@ -1578,8 +1689,8 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
         <div class="flex flex-col min-w-0 flex-1">
-          <span class="text-sm font-semibold text-foreground">Sugerencias aplicadas</span>
-          <span class="text-xs text-ai-purple mt-0.5">Aplicaste las reglas sugeridas para esta barrida. Podés consultar el detalle en cualquier momento con <button onclick="openModal('${ctx}')" type="button" class="underline font-medium text-foreground hover:text-foreground bg-transparent border-0 cursor-pointer p-0">ver detalle</button>.</span>
+          <span class="text-sm font-semibold text-foreground">Barrida de conciliación creada</span>
+          <span class="text-xs text-ai-purple mt-0.5">Se creó una barrida con las reglas aceptadas. Puedes ver el detalle cuando quieras con <button onclick="openModal('${ctx}')" type="button" class="underline font-medium text-foreground hover:text-foreground bg-transparent border-0 cursor-pointer p-0">ver detalle</button>.</span>
         </div>
       </div>`;
       return;
@@ -1596,8 +1707,8 @@
     const iconColor = isError ? 'text-destructive' : 'text-ai-purple';
     const iconSvg = isError ? WARN_SVG : SPARKLES_SVG;
 
-    const TITLES = { LOADING:'Analizando columnas…', SUCCESS_HIGH:'Encontramos coincidencias para configurar', SUCCESS_LOW:'Sugerencias disponibles', ERROR:'El análisis no pudo completarse', ACCEPTED:'Todas las sugerencias fueron aceptadas', DISCARDED:'Sugerencias descartadas' };
-    const DESCS  = { LOADING:'~5 seg · podés configurar mientras tanto', SUCCESS_HIGH:'4 reglas sugeridas para esta barrida', SUCCESS_LOW:'2 reglas sugeridas para esta barrida', ERROR:'Podés seguir configurando sin problema.', ACCEPTED:'Se aplicaron todas las reglas sugeridas en la barrida.', DISCARDED:'Podés evaluar de nuevo cuando quieras.' };
+    const TITLES = { LOADING:'Analizando columnas para sugerir una barrida de conciliación…', SUCCESS_HIGH:'Encontramos una barrida de conciliación sugerida', SUCCESS_LOW:'Barrida de conciliación sugerida disponible', ERROR:'El análisis no pudo completarse', ACCEPTED:'Barrida de conciliación creada', DISCARDED:'Sugerencia descartada' };
+    const DESCS  = { LOADING:'~5 seg · puedes configurar mientras tanto', SUCCESS_HIGH:'4 reglas de conciliación sugeridas', SUCCESS_LOW:'2 reglas de conciliación sugeridas', ERROR:'Puedes seguir configurando sin problema.', ACCEPTED:'Se creó una barrida con las reglas aceptadas.', DISCARDED:'Puedes volver a analizar las columnas cuando quieras.' };
 
     const footerId = wrapperId === 'adv-alert-wrap' ? 'adv' : 'std';
 
@@ -1697,8 +1808,8 @@
     const selectedRules = selected.map(i => SUGGESTIONS[i]);
 
     if (activeCtx === 'adv') {
-      // Create a sweep if none exists yet
-      if (!activeSweep) addSweep();
+      // Create a sweep directly (no modal) if none exists yet
+      if (!activeSweep) _createSweepInSidebar('Barrida sugerida');
       // Persist rules into SWEEP_RULES and re-render the config panel
       SWEEP_RULES[activeSweep] = selectedRules;
       insertRules('adv', selectedRules);
@@ -1726,6 +1837,9 @@
       });
       advState = 'ACCEPTED';
       renderBanner('adv-alert-wrap', 'ACCEPTED');
+      setAddSweepButtonsDisabled(true);
+      const typeBadge = document.getElementById('adv-sweep-type-badge');
+      if (typeBadge) { typeBadge.classList.remove('hidden'); typeBadge.classList.add('flex'); }
     } else {
       insertRules('std', selectedRules);
       stdState = 'ACCEPTED';
@@ -1736,8 +1850,8 @@
     const total = document.querySelectorAll('.rule-chk').length;
     const sweepLabel = activeCtx === 'adv' ? `Barrida ${activeSweep}` : 'Barrida 1';
     const msg = selected.length === total
-      ? `${selected.length} reglas aplicadas en ${sweepLabel}`
-      : `${selected.length} de ${total} reglas aplicadas en ${sweepLabel}`;
+      ? `Barrida creada con ${selected.length} reglas`
+      : `Barrida creada con ${selected.length} de ${total} reglas sugeridas`;
     showToast(msg);
   }
 
