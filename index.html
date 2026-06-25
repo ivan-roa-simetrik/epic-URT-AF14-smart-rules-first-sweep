@@ -1392,11 +1392,12 @@
   let advState       = 'IDLE'; // IDLE = not yet started
   let stdState       = 'IDLE';
 
+  // Matches the /suggestions/generate response schema (rules[])
   const SUGGESTIONS = [
-    { left:'monto',             leftType:'NUMBER', right:'amount',           rightType:'NUMBER', p:'HIGH',   score:0.94 },
-    { left:'fecha_transaccion', leftType:'DATE',   right:'transaction_date', rightType:'DATE',   p:'HIGH',   score:0.91 },
-    { left:'ref_interna',       leftType:'STRING', right:'reference_id',     rightType:'STRING', p:'MEDIUM', score:0.58 },
-    { left:'cuenta_contable',   leftType:'STRING', right:'gl_account',       rightType:'STRING', p:'LOW',    score:0.31 },
+    { columnALabel:'monto',             columnADatatype:'NUMBER', columnBLabel:'amount',           columnBDatatype:'NUMBER', scoreCategory:'HIGH',   columnMatchingScore:1.83 },
+    { columnALabel:'fecha_transaccion', columnADatatype:'DATE',   columnBLabel:'transaction_date', columnBDatatype:'DATE',   scoreCategory:'HIGH',   columnMatchingScore:1.71 },
+    { columnALabel:'ref_interna',       columnADatatype:'STRING', columnBLabel:'reference_id',     columnBDatatype:'STRING', scoreCategory:'MEDIUM', columnMatchingScore:0.58 },
+    { columnALabel:'cuenta_contable',   columnADatatype:'STRING', columnBLabel:'gl_account',       columnBDatatype:'STRING', scoreCategory:'LOW',    columnMatchingScore:0.31 },
   ];
 
   const SWEEP_RULES = {
@@ -1625,9 +1626,9 @@
   // ── Rules rendering ────────────────────────────────────────────
   function ruleRowHTML(rule) {
     return `<div class="grid gap-2 items-center fade-in" style="grid-template-columns:1fr 32px 1fr 72px 72px 28px;">
-      <div class="rcell filled">${rule.left}</div>
+      <div class="rcell filled">${rule.columnALabel}</div>
       <div class="flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 text-xs text-gray-600 font-mono">=</div>
-      <div class="rcell filled">${rule.right}</div>
+      <div class="rcell filled">${rule.columnBLabel}</div>
       <div class="rcell ph">—</div><div class="rcell ph">—</div>
       <button class="w-6 h-6 flex items-center justify-center rounded-lg text-gray-300 hover:text-destructive/70 hover:bg-destructive/10 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1817,7 +1818,7 @@
       const sweepItems = document.querySelectorAll('.sweep-item');
       sweepItems.forEach((el, i) => {
         if (i + 1 === activeSweep) {
-          const preview = selectedRules.map(r => r.left).join(', ');
+          const preview = selectedRules.map(r => r.columnALabel).join(', ');
           const container = el.querySelector('.flex-1.min-w-0');
           if (!container) return;
           const titleRow = container.firstElementChild;
